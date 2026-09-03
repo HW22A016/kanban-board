@@ -60,6 +60,19 @@ function App() {
         <h1>カンバンボードアプリ</h1>
       </div>
 
+      <div style={{marginBottom: "10px"}}>
+        <p　style={{color: "#000"}}>タスクの追加</p>
+        <input
+              type="text"
+              value={newTask}
+              // eはイベントオブジェクト e.targetはイベントが発生した要素(<inpput>要素) e.target.valueは<input>の値
+              onChange={(e) => setNewTask(e.target.value)} />
+        <button
+          style={{marginLeft: "10px"}}
+          onClick={addTask}>追加
+        </button>
+      </div>
+
       <div style={{display: "flex", gap: "1px", justifyContent: "center"}}>
         <div className={style.taskContainer}>
           <h2>タスク</h2>
@@ -69,7 +82,12 @@ function App() {
             <div key={task} className={style.card}>
               <div className={style.deleteContainer}>
                 <button
-                  onClick={() => deleteTask(task, setTasks)}
+                  onClick={() => {
+                    if(window.confirm(`「${task}」を削除しますか?`))
+                    {
+                      deleteTask(task, setTasks);
+                    }
+                  }}
                   >×
                 </button>
               </div>
@@ -84,13 +102,6 @@ function App() {
               </button>
             </div>
           ))}
-          
-          <input
-            type="text"
-            value={newTask}
-            // eはイベントオブジェクト e.targetはイベントが発生した要素(<inpput>要素) e.target.valueは<input>の値
-            onChange={(e) => setNewTask(e.target.value)} />
-          <button onClick={addTask}>追加</button>
         </div>
 
 
@@ -102,7 +113,12 @@ function App() {
             <div key={task} className={style.card}>
               <div　className={style.deleteContainer}>
                 <button
-                  onClick={() => deleteTask(task, setWorkingTasks)}
+                  onClick={() => {
+                    if(window.confirm(`「${task}」を削除しますか?`))
+                    {
+                      deleteTask(task, setWorkingTasks);
+                    }
+                  }}
                   >×
                 </button>
               </div>
@@ -111,7 +127,7 @@ function App() {
                   moveTask(task, setTasks);
                   deleteTask(task, setWorkingTasks);
                 }}
-                style={{marginLeft: "10px"}}>←
+                style={{marginRight: "10px"}}>←
               </button>
               {task}
               {/* アロー関数じゃないと表示された瞬間に実行される */}
@@ -134,7 +150,12 @@ function App() {
             <div key={task} className={style.card}>
               <div　className={style.deleteContainer}>
                 <button
-                  onClick={() => deleteTask(task, setCompletedTasks)}
+                  onClick={() => {
+                    if(window.confirm(`「${task}」を削除しますか?`))
+                    {
+                      deleteTask(task, setCompletedTasks);
+                    }
+                  }}
                   >×
                 </button>
               </div>
@@ -143,7 +164,7 @@ function App() {
                   moveTask(task, setWorkingTasks);
                   deleteTask(task, setCompletedTasks);
                 }}
-                style={{marginLeft: "10px"}}>←
+                style={{marginRight: "10px"}}>←
               </button>
               {task}
               {/* アロー関数じゃないと表示された瞬間に実行される */}
