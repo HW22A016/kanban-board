@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import heroImg from './assets/hero.png'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
@@ -7,11 +7,30 @@ import style from './kanban-boardStyle.module.css'
 
 function App() {
   // useStateはデータを覚えておく
-  const [tasks, setTasks] = useState([]);
-  const [workingTasks, setWorkingTasks] = useState([]);
-  const [completedTasks, setCompletedTasks] = useState([]);
-  
+  const [tasks, setTasks] = useState(() => getLocalStorageData("tasks"));
+  const [workingTasks, setWorkingTasks] = useState(() => getLocalStorageData("workingTasks"));
+  const [completedTasks, setCompletedTasks] = useState(() => getLocalStorageData("completedTasks"));
+
   const [newTask, setNewTask] = useState("");
+
+  function getLocalStorageData(key)
+  {
+    const localData = localStorage.getItem(key);
+    return localData ? JSON.parse(localData) : [];
+  }
+
+  // 第二引数のtasksを監視して変化があれば第一引数のlocalStorage.setItemを実行する
+  useEffect(() => {
+    localStorage.setItem("tasks", JSON.stringify(tasks))
+  }, [tasks]);
+
+  useEffect(() => {
+    localStorage.setItem("workingTasks", JSON.stringify(workingTasks))
+  }, [workingTasks]);
+
+  useEffect(() => {
+    localStorage.setItem("completedTasks", JSON.stringify(completedTasks))
+  }, [completedTasks]);
 
   function addTask()
   {
