@@ -3,10 +3,14 @@ import heroImg from './assets/hero.png'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import './App.css'
+import style from './kanban-boardStyle.module.css'
 
 function App() {
   // useStateはデータを覚えておく
   const [tasks, setTasks] = useState([]);
+  const [workingTasks, setWorkingTasks] = useState([]);
+  const [completedTasks, setCompletedTasks] = useState([]);
+  
   const [newTask, setNewTask] = useState("");
 
   function addTask()
@@ -19,11 +23,16 @@ function App() {
     // スプレッド構文 ...tasksでtasksの中身すべてを展開
     setTasks([...tasks, newTask]);
     setNewTask("");
-  };
+  }
 
-  function deleteTask(targetTask)
+  function deleteTask(targetTask, setTaskState)
   {
-    setTasks(tasks.filter((task) => task !== targetTask));
+    setTaskState((tasks) => tasks.filter((task) => task !== targetTask));
+  }
+
+  function moveTask(task, setTaskState)
+  {
+    setTaskState((tasks) => [...tasks, task]);
   }
 
   return (
@@ -33,24 +42,28 @@ function App() {
       </div>
 
       <div style={{display: "flex", gap: "1px", justifyContent: "center"}}>
-        <div style={{border: "1px solid #000", padding:"10px"}}>
+        <div className={style.taskContainer}>
           <h2>タスク</h2>
 
+          {/* タスク表示 */}
           {tasks.map((task) => (
-            <div key={task}
-              style={{
-                color: "#000",
-                border: "1px solid #000",
-                padding: "10px",
-                marginBottom: "10px",
-              }}
-            >
+            <div key={task} className={style.card}>
+              <div className={style.deleteContainer}>
+                <button
+                  onClick={() => deleteTask(task, setTasks)}
+                  >×
+                </button>
+              </div>
               {task}
               {/* アロー関数じゃないと表示された瞬間に実行される */}
               <button
-                onClick={() => deleteTask(task)}
-                style={{marginLeft: "10px"}}>削除</button>
-              </div>
+                onClick={() => {
+                  moveTask(task, setWorkingTasks);
+                  deleteTask(task, setTasks);
+                }}
+                style={{marginLeft: "10px"}}>→
+              </button>
+            </div>
           ))}
           
           <input
@@ -61,12 +74,62 @@ function App() {
           <button onClick={addTask}>追加</button>
         </div>
 
-        <div  style={{border: "1px solid #000", padding:"10px"}}>
+
+        <div  className={style.taskContainer}>
           <h2>作業中</h2>
+
+          {/* タスク表示 */}
+          {workingTasks.map((task) => (
+            <div key={task} className={style.card}>
+              <div　className={style.deleteContainer}>
+                <button
+                  onClick={() => deleteTask(task, setWorkingTasks)}
+                  >×
+                </button>
+              </div>
+              <button
+                onClick={() => {
+                  moveTask(task, setTasks);
+                  deleteTask(task, setWorkingTasks);
+                }}
+                style={{marginLeft: "10px"}}>←
+              </button>
+              {task}
+              {/* アロー関数じゃないと表示された瞬間に実行される */}
+              <button
+                onClick={() => {
+                  moveTask(task, setCompletedTasks);
+                  deleteTask(task, setWorkingTasks);
+                }}
+                style={{marginLeft: "10px"}}>→
+              </button>
+            </div>
+          ))}
         </div>
 
-        <div  style={{border: "1px solid #000", padding:"10px"}}>
+
+        <div  className={style.taskContainer}>
           <h2>完了</h2>
+
+          {completedTasks.map((task) => (
+            <div key={task} className={style.card}>
+              <div　className={style.deleteContainer}>
+                <button
+                  onClick={() => deleteTask(task, setCompletedTasks)}
+                  >×
+                </button>
+              </div>
+              <button
+                onClick={() => {
+                  moveTask(task, setWorkingTasks);
+                  deleteTask(task, setCompletedTasks);
+                }}
+                style={{marginLeft: "10px"}}>←
+              </button>
+              {task}
+              {/* アロー関数じゃないと表示された瞬間に実行される */}
+            </div>
+          ))}
         </div>
       </div>
     </div>
