@@ -13,6 +13,9 @@ function App() {
 
   const [newTask, setNewTask] = useState("");
 
+  const [editingTask, setEditingTask] = useState(null);
+  const [editingText, setEditingText] = useState("");
+
   function getLocalStorageData(key)
   {
     const localData = localStorage.getItem(key);
@@ -54,6 +57,23 @@ function App() {
     setTaskState((tasks) => [...tasks, task]);
   }
 
+  function editTask(targetTask, newText, setTaskState)
+  {
+    if(newText.trim() === "")
+    {
+      return;
+    }
+
+    setTaskState((tasks) =>
+      tasks.map((task) =>
+        task === targetTask ? newText : task
+      )
+    );
+
+    setEditingTask(null);
+    setEditingText("");
+  }
+
   return (
     <div>
       <div>
@@ -91,15 +111,47 @@ function App() {
                   >×
                 </button>
               </div>
-              {task}
-              {/* アロー関数じゃないと表示された瞬間に実行される */}
-              <button
-                onClick={() => {
-                  moveTask(task, setWorkingTasks);
-                  deleteTask(task, setTasks);
-                }}
-                style={{marginLeft: "10px"}}>→
-              </button>
+
+              {editingTask === task ? (
+                // 複数の要素をひとまとめにするための見えない入れ物
+                <>
+                  <input
+                    type="text"
+                    value={editingText}
+                    onChange={(e) => setEditingText(e.target.value)}
+                  />
+
+                  <button
+                    onClick={() => {
+                      editTask(task, editingText, setTasks);
+                    }}
+                  >
+                    保存
+                  </button>
+                </>
+              ) : (
+                <>
+                  {task}
+
+                  <button
+                    onClick={() => {
+                      setEditingTask(task);
+                      setEditingText(task);
+                    }}
+                    style={{marginLeft: "10px"}}
+                  >
+                    編集
+                  </button>
+                {/* アロー関数じゃないと表示された瞬間に実行される */}
+                <button
+                  onClick={() => {
+                    moveTask(task, setWorkingTasks);
+                    deleteTask(task, setTasks);
+                  }}
+                  style={{marginLeft: "10px"}}>→
+                </button>
+                </>
+              )}
             </div>
           ))}
         </div>
