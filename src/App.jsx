@@ -121,35 +121,41 @@ function App() {
                     onChange={(e) => setEditingText(e.target.value)}
                   />
 
-                  <button
-                    onClick={() => {
-                      editTask(task, editingText, setTasks);
-                    }}
-                  >
-                    保存
-                  </button>
+                  <div>
+                    <button
+                      onClick={() => {
+                        editTask(task, editingText, setTasks);
+                      }}
+                    >
+                      保存
+                    </button>
+                  </div>
                 </>
               ) : (
                 <>
                   {task}
 
+                  {/* アロー関数じゃないと表示された瞬間に実行される */}
                   <button
                     onClick={() => {
-                      setEditingTask(task);
-                      setEditingText(task);
+                      moveTask(task, setWorkingTasks);
+                      deleteTask(task, setTasks);
                     }}
-                    style={{marginLeft: "10px"}}
-                  >
-                    編集
+                    style={{marginLeft: "10px"}}>→
                   </button>
-                {/* アロー関数じゃないと表示された瞬間に実行される */}
-                <button
-                  onClick={() => {
-                    moveTask(task, setWorkingTasks);
-                    deleteTask(task, setTasks);
-                  }}
-                  style={{marginLeft: "10px"}}>→
-                </button>
+
+                  <div>
+                    <button
+                        onClick={() => {
+                          setEditingTask(task);
+                          setEditingText(task);
+                        }}
+                        style={{marginLeft: "10px"}}
+                      >
+                        編集
+                    </button>
+                  </div>
+
                 </>
               )}
             </div>
