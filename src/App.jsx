@@ -10,6 +10,7 @@ function App() {
   const [tasks, setTasks] = useState(() => getLocalStorageData("tasks"));
 
   const [newTask, setNewTask] = useState("");
+  const [newTaskDueDate, setNewTaskDueDate] = useState("");
 
   const STATUS = {
     TODO: "todo",
@@ -44,12 +45,14 @@ function App() {
     const newTaskObject = {
       id: 0 < tasksLength ? tasks[tasksLength - 1].id + 1 : 1,
       text: newTask,
-      status: STATUS.TODO
+      status: STATUS.TODO,
+      dueDate: newTaskDueDate
     };
     
     // スプレッド構文 ...tasksでtasksの中身すべてを展開
     setTasks([...tasks, newTaskObject]);
     setNewTask("");
+    setNewTaskDueDate("");
   }
 
   function deleteTask(targetTaskId, setTaskState)
@@ -94,12 +97,20 @@ function App() {
 
       <div style={{marginBottom: "10px"}}>
         <p style={{color: "#000"}}>タスクの追加</p>
-        <input
-              type="text"
-              value={newTask}
-              placeholder='タスク名(必須)'
-              // eはイベントオブジェクト e.targetはイベントが発生した要素(<inpput>要素) e.target.valueは<input>の値
-              onChange={(e) => setNewTask(e.target.value)} />
+        <div>
+          <input
+            type="text"
+            value={newTask}
+            placeholder='タスク名(必須)'
+            // eはイベントオブジェクト e.targetはイベントが発生した要素(<inpput>要素) e.target.valueは<input>の値
+            onChange={(e) => setNewTask(e.target.value)} />
+        </div>
+        <div>
+          <input
+            type="date"
+            value={newTaskDueDate}
+            onChange={(e) => setNewTaskDueDate(e.target.value)} />
+        </div>
         <button
           style={{marginLeft: "10px"}}
           onClick={addTask}>追加
@@ -147,6 +158,7 @@ function App() {
               ) : (
                 <>
                   {task.text}
+                  {task.dueDate}
 
                   {/* アロー関数じゃないと表示された瞬間に実行される */}
                   <button
