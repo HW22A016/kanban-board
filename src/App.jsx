@@ -8,12 +8,16 @@ import style from './kanban-boardStyle.module.css'
 function App() {
   // useStateはデータを覚えておく
   const [tasks, setTasks] = useState(() => getLocalStorageData("tasks"));
-  const [workingTasks, setWorkingTasks] = useState(() => getLocalStorageData("workingTasks"));
-  const [completedTasks, setCompletedTasks] = useState(() => getLocalStorageData("completedTasks"));
 
   const [newTask, setNewTask] = useState("");
 
-  const [editingTask, setEditingTask] = useState(null);
+  const STATUS = {
+    TODO: "todo",
+    WORKING: "working",
+    COMPLETED: "completed"
+  };
+
+  const [editingTaskId, setEditingTaskId] = useState(null);
   const [editingText, setEditingText] = useState("");
 
   function getLocalStorageData(key)
@@ -27,14 +31,6 @@ function App() {
     localStorage.setItem("tasks", JSON.stringify(tasks))
   }, [tasks]);
 
-  useEffect(() => {
-    localStorage.setItem("workingTasks", JSON.stringify(workingTasks))
-  }, [workingTasks]);
-
-  useEffect(() => {
-    localStorage.setItem("completedTasks", JSON.stringify(completedTasks))
-  }, [completedTasks]);
-
   function addTask()
   {
     // newTaskの中身の文字の前後にある空白を取り除く
@@ -42,22 +38,38 @@ function App() {
     {
       return;
     }
+
+    const tasksLength = tasks.length;
+    
+    const newTaskObject = {
+      id: 0 < tasksLength ? tasks[tasksLength - 1].id + 1 : 1,
+      text: newTask,
+      status: STATUS.TODO
+    };
+    
     // スプレッド構文 ...tasksでtasksの中身すべてを展開
-    setTasks([...tasks, newTask]);
+    setTasks([...tasks, newTaskObject]);
     setNewTask("");
   }
 
-  function deleteTask(targetTask, setTaskState)
+  function deleteTask(targetTaskId, setTaskState)
   {
-    setTaskState((tasks) => tasks.filter((task) => task !== targetTask));
+    setTaskState((tasks) =>
+      tasks.filter((task) =>
+        task.id !== targetTaskId)
+    );
   }
 
-  function moveTask(task, setTaskState)
+  function changeTaskStatus(targetTaskId, newStatus)
   {
-    setTaskState((tasks) => [...tasks, task]);
+    setTasks((tasks) =>
+      tasks.map((task) =>
+        task.id === targetTaskId ? {...task, status: newStatus} : task
+      )
+    );
   }
 
-  function editTask(targetTask, newText, setTaskState)
+  function editTask(targetTaskId, newText, setTaskState)
   {
     if(newText.trim() === "")
     {
@@ -66,11 +78,11 @@ function App() {
 
     setTaskState((tasks) =>
       tasks.map((task) =>
-        task === targetTask ? newText : task
+        task.id === targetTaskId ? {...task, text: newText} : task
       )
     );
 
-    setEditingTask(null);
+    setEditingTaskId(null);
     setEditingText("");
   }
 
@@ -81,10 +93,11 @@ function App() {
       </div>
 
       <div style={{marginBottom: "10px"}}>
-        <p　style={{color: "#000"}}>タスクの追加</p>
+        <p style={{color: "#000"}}>タスクの追加</p>
         <input
               type="text"
               value={newTask}
+              placeholder='タスク名(必須)'
               // eはイベントオブジェクト e.targetはイベントが発生した要素(<inpput>要素) e.target.valueは<input>の値
               onChange={(e) => setNewTask(e.target.value)} />
         <button
@@ -98,21 +111,21 @@ function App() {
           <h2>タスク</h2>
 
           {/* タスク表示 */}
-          {tasks.map((task) => (
-            <div key={task} className={style.card}>
+          {tasks.filter((task) => task.status === STATUS.TODO).map((task) => (
+            <div key={task.id} className={style.card}>
               <div className={style.deleteContainer}>
                 <button
                   onClick={() => {
-                    if(window.confirm(`「${task}」を削除しますか?`))
+                    if(window.confirm(`「${task.text}」を削除しますか?`))
                     {
-                      deleteTask(task, setTasks);
+                      deleteTask(task.id, setTasks);
                     }
                   }}
                   >×
                 </button>
               </div>
 
-              {editingTask === task ? (
+              {editingTaskId === task.id ? (
                 // 複数の要素をひとまとめにするための見えない入れ物
                 <>
                   <input
@@ -124,7 +137,7 @@ function App() {
                   <div>
                     <button
                       onClick={() => {
-                        editTask(task, editingText, setTasks);
+                        editTask(task.id, editingText, setTasks);
                       }}
                     >
                       保存
@@ -133,13 +146,12 @@ function App() {
                 </>
               ) : (
                 <>
-                  {task}
+                  {task.text}
 
                   {/* アロー関数じゃないと表示された瞬間に実行される */}
                   <button
                     onClick={() => {
-                      moveTask(task, setWorkingTasks);
-                      deleteTask(task, setTasks);
+                      changeTaskStatus(task.id, STATUS.WORKING)
                     }}
                     style={{marginLeft: "10px"}}>→
                   </button>
@@ -147,8 +159,8 @@ function App() {
                   <div>
                     <button
                         onClick={() => {
-                          setEditingTask(task);
-                          setEditingText(task);
+                          setEditingTaskId(task.id);
+                          setEditingText(task.text);
                         }}
                         style={{marginLeft: "10px"}}
                       >
@@ -167,14 +179,14 @@ function App() {
           <h2>作業中</h2>
 
           {/* タスク表示 */}
-          {workingTasks.map((task) => (
-            <div key={task} className={style.card}>
-              <div　className={style.deleteContainer}>
+          {tasks.filter((task) => task.status === STATUS.WORKING).map((task) => (
+            <div key={task.id} className={style.card}>
+              <div className={style.deleteContainer}>
                 <button
                   onClick={() => {
-                    if(window.confirm(`「${task}」を削除しますか?`))
+                    if(window.confirm(`「${task.text}」を削除しますか?`))
                     {
-                      deleteTask(task, setWorkingTasks);
+                      deleteTask(task.id, setTasks);
                     }
                   }}
                   >×
@@ -182,17 +194,15 @@ function App() {
               </div>
               <button
                 onClick={() => {
-                  moveTask(task, setTasks);
-                  deleteTask(task, setWorkingTasks);
+                  changeTaskStatus(task.id, STATUS.TODO);
                 }}
                 style={{marginRight: "10px"}}>←
               </button>
-              {task}
+              {task.text}
               {/* アロー関数じゃないと表示された瞬間に実行される */}
               <button
                 onClick={() => {
-                  moveTask(task, setCompletedTasks);
-                  deleteTask(task, setWorkingTasks);
+                  changeTaskStatus(task.id, STATUS.COMPLETED);
                 }}
                 style={{marginLeft: "10px"}}>→
               </button>
@@ -204,14 +214,14 @@ function App() {
         <div  className={style.taskContainer}>
           <h2>完了</h2>
 
-          {completedTasks.map((task) => (
-            <div key={task} className={style.card}>
-              <div　className={style.deleteContainer}>
+          {tasks.filter((task) => task.status === STATUS.COMPLETED).map((task) => (
+            <div key={task.id} className={style.card}>
+              <div className={style.deleteContainer}>
                 <button
                   onClick={() => {
-                    if(window.confirm(`「${task}」を削除しますか?`))
+                    if(window.confirm(`「${task.text}」を削除しますか?`))
                     {
-                      deleteTask(task, setCompletedTasks);
+                      deleteTask(task.id, setTasks);
                     }
                   }}
                   >×
@@ -219,12 +229,11 @@ function App() {
               </div>
               <button
                 onClick={() => {
-                  moveTask(task, setWorkingTasks);
-                  deleteTask(task, setCompletedTasks);
+                  changeTaskStatus(task.id, STATUS.WORKING);
                 }}
                 style={{marginRight: "10px"}}>←
               </button>
-              {task}
+              {task.text}
               {/* アロー関数じゃないと表示された瞬間に実行される */}
             </div>
           ))}
