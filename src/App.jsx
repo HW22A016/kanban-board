@@ -13,6 +13,7 @@ function App() {
   const [newTaskDueDate, setNewTaskDueDate] = useState("");
   const [newTaskDueTime, setNewTaskDueTime] = useState("");
   const [newTaskStartDate, setNewTaskStartDate] = useState("");
+  const [newTaskColor, setNewTaskColor] = useState("");
 
   const STATUS = {
     TODO: "todo",
@@ -57,6 +58,7 @@ function App() {
     const newTaskObject = {
       id: 0 < tasksLength ? tasks[tasksLength - 1].id + 1 : 1,
       text: newTask,
+      color: newTaskColor || "#FFF",
       status: STATUS.TODO,
       startDate: newTaskStartDate || nowDate,
       dueDate: newTaskDueDate || null,
@@ -66,6 +68,7 @@ function App() {
     // スプレッド構文 ...tasksでtasksの中身すべてを展開
     setTasks([...tasks, newTaskObject]);
     setNewTask("");
+    setNewTaskColor("");
     setNewTaskStartDate("");
     setNewTaskDueDate("");
     setNewTaskDueTime("");
@@ -137,6 +140,15 @@ function App() {
           </div>
 
           <div>
+            <span>カラーコード:</span>
+            <input
+              type="text"
+              value={newTaskColor}
+              placeholder='#ffffff'
+              onChange={(e) => setNewTaskColor(e.target.value)} />
+          </div>
+
+          <div>
             <span>開始時期:</span>
             <input
               type="date"
@@ -173,7 +185,7 @@ function App() {
 
           {/* タスク表示 */}
           {tasks.filter((task) => task.status === STATUS.TODO).map((task) => (
-            <div key={task.id} className={style.card}>
+            <div key={task.id} className={style.card} style={{backgroundColor: task.color}}>
               {editingTaskId === task.id ? (
                 // 複数の要素をひとまとめにするための見えない入れ物
                 <>
