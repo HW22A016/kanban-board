@@ -11,6 +11,8 @@ function App() {
 
   const [newTask, setNewTask] = useState("");
   const [newTaskDueDate, setNewTaskDueDate] = useState("");
+  const [newTaskDueTime, setNewTaskDueTime] = useState("");
+  const [newTaskStartDate, setNewTaskStartDate] = useState("");
 
   const STATUS = {
     TODO: "todo",
@@ -20,6 +22,9 @@ function App() {
 
   const [editingTaskId, setEditingTaskId] = useState(null);
   const [editingText, setEditingText] = useState("");
+  const [editingStartDate, setEditingStartDate] = useState("");
+  const [editingDueDate, setEditingDueDate] = useState("");
+  const [editingDueTime, setEditingDueTime] = useState("");
 
   function getLocalStorageData(key)
   {
@@ -41,18 +46,29 @@ function App() {
     }
 
     const tasksLength = tasks.length;
+
+    let nowDate = "";
+    if(!newTaskStartDate)
+    {
+      const today = new Date();
+      nowDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+    }
     
     const newTaskObject = {
       id: 0 < tasksLength ? tasks[tasksLength - 1].id + 1 : 1,
       text: newTask,
       status: STATUS.TODO,
-      dueDate: newTaskDueDate
+      startDate: newTaskStartDate || nowDate,
+      dueDate: newTaskDueDate || null,
+      dueTime: newTaskDueTime || null
     };
     
     // スプレッド構文 ...tasksでtasksの中身すべてを展開
     setTasks([...tasks, newTaskObject]);
     setNewTask("");
+    setNewTaskStartDate("");
     setNewTaskDueDate("");
+    setNewTaskDueTime("");
   }
 
   function deleteTask(targetTaskId, setTaskState)
@@ -72,7 +88,7 @@ function App() {
     );
   }
 
-  function editTask(targetTaskId, newText, setTaskState)
+  function editTask(targetTaskId, newText, newStartDate, newDueDate, newDueTime, setTaskState)
   {
     if(newText.trim() === "")
     {
@@ -81,12 +97,25 @@ function App() {
 
     setTaskState((tasks) =>
       tasks.map((task) =>
-        task.id === targetTaskId ? {...task, text: newText} : task
+        task.id === targetTaskId ? {...task, text: newText, startDate: newStartDate || null, dueDate: newDueDate || null, dueTime: newDueTime || null} : task
       )
     );
 
     setEditingTaskId(null);
     setEditingText("");
+    setEditingStartDate("");
+    setEditingDueDate("");
+    setEditingDueTime("");
+  }
+
+  function formatDate(date)
+  {
+    if(!date)
+    {
+      return;
+    }
+    const [year, month, day] = date.split("-");
+    return `${year}年${month}月${day}日`;
   }
 
   return (
@@ -95,26 +124,47 @@ function App() {
         <h1>カンバンボードアプリ</h1>
       </div>
 
-      <div style={{marginBottom: "10px"}}>
-        <p style={{color: "#000"}}>タスクの追加</p>
-        <div>
-          <input
-            type="text"
-            value={newTask}
-            placeholder='タスク名(必須)'
-            // eはイベントオブジェクト e.targetはイベントが発生した要素(<inpput>要素) e.target.valueは<input>の値
-            onChange={(e) => setNewTask(e.target.value)} />
+      <p style={{color: "#000"}}>タスクの追加</p>
+      <div　style={{color: "#000", display:"flex", justifyContent:"center"}}>
+        <div style={{marginBottom: "10px", textAlign: "right"}}>
+          <div>
+            <input
+              type="text"
+              value={newTask}
+              placeholder='タスク名(必須)'
+              // eはイベントオブジェクト e.targetはイベントが発生した要素(<inpput>要素) e.target.valueは<input>の値
+              onChange={(e) => setNewTask(e.target.value)} />
+          </div>
+
+          <div>
+            <span>開始時期:</span>
+            <input
+              type="date"
+              value={newTaskStartDate}
+              onChange={(e) => setNewTaskStartDate(e.target.value)} />
+          </div>
+
+          <div>
+            <span>期日:</span>
+            <input
+              type="date"
+              value={newTaskDueDate}
+              onChange={(e) => setNewTaskDueDate(e.target.value)} />
+          </div>
+
+          <div>
+            <span>期限時刻:</span>
+            <input
+              type="time"
+              value={newTaskDueTime}
+              onChange={(e) => setNewTaskDueTime(e.target.value)} />
+          </div>
+
+          <button
+            style={{marginLeft: "10px"}}
+            onClick={addTask}>追加
+          </button>
         </div>
-        <div>
-          <input
-            type="date"
-            value={newTaskDueDate}
-            onChange={(e) => setNewTaskDueDate(e.target.value)} />
-        </div>
-        <button
-          style={{marginLeft: "10px"}}
-          onClick={addTask}>追加
-        </button>
       </div>
 
       <div style={{display: "flex", gap: "1px", justifyContent: "center"}}>
@@ -124,31 +174,44 @@ function App() {
           {/* タスク表示 */}
           {tasks.filter((task) => task.status === STATUS.TODO).map((task) => (
             <div key={task.id} className={style.card}>
-              <div className={style.deleteContainer}>
-                <button
-                  onClick={() => {
-                    if(window.confirm(`「${task.text}」を削除しますか?`))
-                    {
-                      deleteTask(task.id, setTasks);
-                    }
-                  }}
-                  >×
-                </button>
-              </div>
-
               {editingTaskId === task.id ? (
                 // 複数の要素をひとまとめにするための見えない入れ物
                 <>
-                  <input
-                    type="text"
-                    value={editingText}
-                    onChange={(e) => setEditingText(e.target.value)}
-                  />
+                  <div>
+                    <input
+                      type="text"
+                      value={editingText}
+                      onChange={(e) => setEditingText(e.target.value)}/>
+                  </div>
+
+                  <div>
+                    <span>開始時期:</span>
+                    <input
+                      type="date"
+                      value={editingStartDate}
+                      onChange={(e) => setEditingStartDate(e.target.value)} />
+                  </div>
+
+                  <div>
+                    <span>期日:</span>
+                    <input
+                      type="date"
+                      value={editingDueDate}
+                      onChange={(e) => setEditingDueDate(e.target.value)} />
+                  </div>
+
+                  <div>
+                    <span>期限時刻:</span>
+                    <input
+                      type="time"
+                      value={editingDueTime}
+                      onChange={(e) => setEditingDueTime(e.target.value)} />
+                  </div>
 
                   <div>
                     <button
                       onClick={() => {
-                        editTask(task.id, editingText, setTasks);
+                        editTask(task.id, editingText, editingStartDate, editingDueDate, editingDueTime, setTasks);
                       }}
                     >
                       保存
@@ -157,22 +220,50 @@ function App() {
                 </>
               ) : (
                 <>
-                  {task.text}
-                  {task.dueDate}
+                  <div className={style.deleteContainer}>
+                    <button
+                      onClick={() => {
+                        if(window.confirm(`「${task.text}」を削除しますか?`))
+                        {
+                          deleteTask(task.id, setTasks);
+                        }
+                      }}
+                      >×
+                    </button>
+                  </div>
+                  
+                  <div>
+                    {task.text}
+                    {/* アロー関数じゃないと表示された瞬間に実行される */}
+                    <button
+                      onClick={() => {
+                        changeTaskStatus(task.id, STATUS.WORKING)
+                      }}
+                      style={{marginLeft: "10px"}}>→
+                    </button>
+                  </div>
 
-                  {/* アロー関数じゃないと表示された瞬間に実行される */}
-                  <button
-                    onClick={() => {
-                      changeTaskStatus(task.id, STATUS.WORKING)
-                    }}
-                    style={{marginLeft: "10px"}}>→
-                  </button>
+                  <div>
+                    <span>開始時期:</span>
+                    {formatDate(task.startDate)}
+                  </div>
+                  {(task.dueDate || task.dueTime) &&(
+                    <div>
+                      <span>期日:</span>
+                      {task.dueDate && formatDate(task.dueDate)}
+                      {task.dueDate && task.dueTime && " "}
+                      {task.dueTime}
+                    </div>
+                  )}
 
                   <div>
                     <button
                         onClick={() => {
                           setEditingTaskId(task.id);
                           setEditingText(task.text);
+                          setEditingStartDate(task.startDate || "");
+                          setEditingDueDate(task.dueDate || "");
+                          setEditingDueTime(task.dueTime || "");
                         }}
                         style={{marginLeft: "10px"}}
                       >
@@ -204,20 +295,35 @@ function App() {
                   >×
                 </button>
               </div>
-              <button
-                onClick={() => {
-                  changeTaskStatus(task.id, STATUS.TODO);
-                }}
-                style={{marginRight: "10px"}}>←
-              </button>
-              {task.text}
-              {/* アロー関数じゃないと表示された瞬間に実行される */}
-              <button
-                onClick={() => {
-                  changeTaskStatus(task.id, STATUS.COMPLETED);
-                }}
-                style={{marginLeft: "10px"}}>→
-              </button>
+
+              <div>
+                <button
+                  onClick={() => {
+                    changeTaskStatus(task.id, STATUS.TODO);
+                  }}
+                  style={{marginRight: "10px"}}>←
+                </button>
+                {task.text}
+                {/* アロー関数じゃないと表示された瞬間に実行される */}
+                <button
+                  onClick={() => {
+                    changeTaskStatus(task.id, STATUS.COMPLETED);
+                  }}
+                  style={{marginLeft: "10px"}}>→
+                </button>
+              </div>
+              <div>
+                <span>開始時期:</span>
+                {formatDate(task.startDate)}
+              </div>
+              {(task.dueDate || task.dueTime) &&(
+                <div>
+                  <span>期日:</span>
+                  {task.dueDate && formatDate(task.dueDate)}
+                  {task.dueDate && task.dueTime && " "}
+                  {task.dueTime}
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -239,13 +345,27 @@ function App() {
                   >×
                 </button>
               </div>
-              <button
-                onClick={() => {
-                  changeTaskStatus(task.id, STATUS.WORKING);
-                }}
-                style={{marginRight: "10px"}}>←
-              </button>
-              {task.text}
+              <div>
+                <button
+                  onClick={() => {
+                    changeTaskStatus(task.id, STATUS.WORKING);
+                  }}
+                  style={{marginRight: "10px"}}>←
+                </button>
+                {task.text}
+              </div>
+              <div>
+                <span>開始時期:</span>
+                {formatDate(task.startDate)}
+              </div>
+              {(task.dueDate || task.dueTime) &&(
+                <div>
+                  <span>期日:</span>
+                  {task.dueDate && formatDate(task.dueDate)}
+                  {task.dueDate && task.dueTime && " "}
+                  {task.dueTime}
+                </div>
+              )}
               {/* アロー関数じゃないと表示された瞬間に実行される */}
             </div>
           ))}
