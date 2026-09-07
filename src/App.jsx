@@ -15,6 +15,8 @@ function App() {
   const [newTaskStartDate, setNewTaskStartDate] = useState("");
   const [newTaskColor, setNewTaskColor] = useState("");
 
+  const [taskError, setTaskError] = useState("");
+
   const STATUS = {
     TODO: "todo",
     WORKING: "working",
@@ -43,8 +45,17 @@ function App() {
     // newTaskの中身の文字の前後にある空白を取り除く
     if(newTask.trim() === "")
     {
+      setTaskError("タスク名を入力してください");
       return;
     }
+
+    if(!newTaskDueDate && newTaskDueTime)
+    {
+      setTaskError("期限時刻を設定する場合は、期日も入力してください");
+      return;
+    }
+
+    setTaskError("");
 
     const tasksLength = tasks.length;
     
@@ -156,57 +167,64 @@ function App() {
         <h1>カンバンボードアプリ</h1>
       </div>
 
-      <p style={{color: "#000"}}>タスクの追加</p>
-      <div　style={{color: "#000", display:"flex", justifyContent:"center"}}>
-        <div style={{marginBottom: "10px", textAlign: "right"}}>
-          <div>
-            <input
-              type="text"
-              value={newTask}
-              placeholder='タスク名(必須)'
-              // eはイベントオブジェクト e.targetはイベントが発生した要素(<inpput>要素) e.target.valueは<input>の値
-              onChange={(e) => setNewTask(e.target.value)} />
-          </div>
+      <div>
+        <p style={{color: "#000"}}>タスクの追加</p>
+        <div　style={{color: "#000", display:"flex", justifyContent:"center"}}>
+          <div style={{marginBottom: "10px", textAlign: "right"}}>
+            <div>
+              <input
+                type="text"
+                value={newTask}
+                placeholder='タスク名(必須)'
+                // eはイベントオブジェクト e.targetはイベントが発生した要素(<inpput>要素) e.target.valueは<input>の値
+                onChange={(e) => setNewTask(e.target.value)} />
+            </div>
 
-          <div>
-            <span>カラーコード:</span>
-            <input
-              type="text"
-              value={newTaskColor}
-              placeholder='#ffffff'
-              onChange={(e) => setNewTaskColor(e.target.value)} />
-          </div>
+            <div>
+              <span>カラーコード:</span>
+              <input
+                type="text"
+                value={newTaskColor}
+                placeholder='#ffffff'
+                onChange={(e) => setNewTaskColor(e.target.value)} />
+            </div>
 
-          <div>
-            <span>開始時期:</span>
-            <input
-              type="date"
-              value={newTaskStartDate}
-              onChange={(e) => setNewTaskStartDate(e.target.value)} />
-          </div>
+            <div>
+              <span>開始時期:</span>
+              <input
+                type="date"
+                value={newTaskStartDate}
+                onChange={(e) => setNewTaskStartDate(e.target.value)} />
+            </div>
 
-          <div>
-            <span>期日:</span>
-            <input
-              type="date"
-              value={newTaskDueDate}
-              onChange={(e) => setNewTaskDueDate(e.target.value)} />
-          </div>
+            <div>
+              <span>期日:</span>
+              <input
+                type="date"
+                value={newTaskDueDate}
+                onChange={(e) => setNewTaskDueDate(e.target.value)} />
+            </div>
 
-          <div>
-            <span>期限時刻:</span>
-            <input
-              type="time"
-              value={newTaskDueTime}
-              onChange={(e) => setNewTaskDueTime(e.target.value)} />
+            <div>
+              <span>期限時刻:</span>
+              <input
+                type="time"
+                value={newTaskDueTime}
+                onChange={(e) => setNewTaskDueTime(e.target.value)} />
+            </div>
           </div>
-
+        </div>
+        <div>
           <button
-            style={{marginLeft: "10px"}}
-            onClick={addTask}>追加
-          </button>
+              style={{marginLeft: "10px"}}
+              onClick={addTask}>追加
+            </button>
         </div>
       </div>
+
+      {taskError && (
+        <p style={{ color: "red" }}>{taskError}</p>
+      )}
 
       <div style={{display: "flex", gap: "1px", justifyContent: "center"}}>
         
