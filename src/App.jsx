@@ -167,6 +167,7 @@ function App() {
     
     if(dueTime)
     {
+      // 期限日時と時間を合体
       const dueDateTime = new Date(`${dueDate}T${dueTime}`);
       const difference = dueDateTime - now;
 
@@ -177,7 +178,7 @@ function App() {
 
       let totalseconds = Math.floor(difference / 1000);
 
-      const days = Math.floor(totalseconds / (24 * 3600));
+      const days = Math.floor(totalseconds / 86400);
       totalseconds -= days * 86400;
 
       const hours = Math.floor(totalseconds / 3600);
@@ -200,7 +201,23 @@ function App() {
       }
     }
 
-    
+    const today = now;
+    today.setHours(0, 0, 0, 0); // 時、分、秒、ミリ秒
+
+    const [year, month, day] = dueDate.split("-");
+    const dueDay = new Date(Number(year), Number(month) - 1, Number(day));
+
+    const difference = dueDay - today;
+    if(difference < 0)
+    {
+      return "期限切れ";
+    }
+
+    const totalseconds = Math.floor(difference / 1000);
+
+    const days = Math.floor(totalseconds / 86400);
+
+    return `${days}日`;
   }
 
   return (
