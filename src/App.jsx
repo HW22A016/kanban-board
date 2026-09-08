@@ -161,6 +161,48 @@ function App() {
     return `${year}年${month}月${day}日`;
   }
 
+  function getRemainingTime(dueDate, dueTime)
+  {
+    const now = new Date();
+    
+    if(dueTime)
+    {
+      const dueDateTime = new Date(`${dueDate}T${dueTime}`);
+      const difference = dueDateTime - now;
+
+      if(difference < 0)
+      {
+        return "期限切れ";
+      }
+
+      let totalseconds = Math.floor(difference / 1000);
+
+      const days = Math.floor(totalseconds / (24 * 3600));
+      totalseconds -= days * 86400;
+
+      const hours = Math.floor(totalseconds / 3600);
+      totalseconds -= hours * 3600;
+
+      const minutes = Math.floor(totalseconds / 60);
+      totalseconds -= minutes * 60;
+
+      if(0 < days)
+      {
+        return `${days}日${hours}時間`;
+      }
+      else if(0 < hours)
+      {
+        return `${hours}時間${minutes}分`;
+      }
+      else
+      {
+        return `${minutes}分`;
+      }
+    }
+
+    
+  }
+
   return (
     <div>
       <div>
@@ -308,12 +350,18 @@ function App() {
                     <span>開始時期:</span>
                     {formatDate(task.startDate)}
                   </div>
-                  {(task.dueDate || task.dueTime) &&(
+                  {task.dueDate &&(
                     <div>
-                      <span>期日:</span>
-                      {task.dueDate && formatDate(task.dueDate)}
-                      {task.dueDate && task.dueTime && " "}
-                      {task.dueTime}
+                      <div>
+                        <span>期日:</span>
+                        {task.dueDate && formatDate(task.dueDate)}
+                        {task.dueDate && task.dueTime && " "}
+                        {task.dueTime}
+                      </div>
+                      <div>
+                        <span>残り時間:</span>
+                        {getRemainingTime(task.dueDate, task.dueTime)}
+                      </div>
                     </div>
                   )}
 
