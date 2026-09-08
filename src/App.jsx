@@ -25,6 +25,7 @@ function App() {
 
   const [editingTaskId, setEditingTaskId] = useState(null);
   const [editingText, setEditingText] = useState("");
+  const [editingTaskColor, setEditingTaskColor] = useState("");
   const [editingStartDate, setEditingStartDate] = useState("");
   const [editingDueDate, setEditingDueDate] = useState("");
   const [editingDueTime, setEditingDueTime] = useState("");
@@ -119,7 +120,7 @@ function App() {
     );
   }
 
-  function editTask(targetTaskId, newText, newStartDate, newDueDate, newDueTime, setTaskState)
+  function editTask(targetTaskId, newText, newColor, newStartDate, newDueDate, newDueTime, setTaskState)
   {
     if(newText.trim() === "")
     {
@@ -128,12 +129,13 @@ function App() {
 
     setTaskState((tasks) =>
       tasks.map((task) =>
-        task.id === targetTaskId ? {...task, text: newText, startDate: newStartDate || null, dueDate: newDueDate || null, dueTime: newDueTime || null} : task
+        task.id === targetTaskId ? {...task, text: newText, color: newColor, startDate: newStartDate || null, dueDate: newDueDate || null, dueTime: newDueTime || null} : task
       )
     );
 
     setEditingTaskId(null);
     setEditingText("");
+    setEditingTaskColor("");
     setEditingStartDate("");
     setEditingDueDate("");
     setEditingDueTime("");
@@ -313,6 +315,14 @@ function App() {
                   </div>
 
                   <div>
+                    <span>カラーコード:</span>
+                    <input
+                      type="text"
+                      value={editingTaskColor}
+                      onChange={(e) => setEditingTaskColor(e.target.value)} />
+                  </div>
+
+                  <div>
                     <span>期日:</span>
                     <input
                       type="date"
@@ -331,7 +341,7 @@ function App() {
                   <div>
                     <button
                       onClick={() => {
-                        editTask(task.id, editingText, editingStartDate, editingDueDate, editingDueTime, setTasks);
+                        editTask(task.id, editingText, editingTaskColor, editingStartDate, editingDueDate, editingDueTime, setTasks);
                       }}
                     >
                       保存
@@ -387,6 +397,7 @@ function App() {
                         onClick={() => {
                           setEditingTaskId(task.id);
                           setEditingText(task.text);
+                          setEditingTaskColor(task.color || "");
                           setEditingStartDate(task.startDate || "");
                           setEditingDueDate(task.dueDate || "");
                           setEditingDueTime(task.dueTime || "");
@@ -421,6 +432,14 @@ function App() {
                   </div>
 
                   <div>
+                    <span>カラーコード:</span>
+                    <input
+                      type="text"
+                      value={editingTaskColor}
+                      onChange={(e) => setEditingTaskColor(e.target.value)} />
+                  </div>
+
+                  <div>
                     <span>開始時期:</span>
                     <input
                       type="date"
@@ -447,7 +466,7 @@ function App() {
                   <div>
                     <button
                       onClick={() => {
-                        editTask(task.id, editingText, editingStartDate, editingDueDate, editingDueTime, setTasks);
+                        editTask(task.id, editingText, editingTaskColor, editingStartDate, editingDueDate, editingDueTime, setTasks);
                       }}
                     >
                       保存
@@ -509,6 +528,7 @@ function App() {
                         onClick={() => {
                           setEditingTaskId(task.id);
                           setEditingText(task.text);
+                          setEditingTaskColor(task.color || "");
                           setEditingStartDate(task.startDate || "");
                           setEditingDueDate(task.dueDate || "");
                           setEditingDueTime(task.dueTime || "");
