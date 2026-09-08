@@ -491,10 +491,16 @@ function App() {
                   </div>
                   {(task.dueDate || task.dueTime) &&(
                     <div>
-                      <span>期日:</span>
-                      {task.dueDate && formatDate(task.dueDate)}
-                      {task.dueDate && task.dueTime && " "}
-                      {task.dueTime}
+                      <div>
+                        <span>期日:</span>
+                        {task.dueDate && formatDate(task.dueDate)}
+                        {task.dueDate && task.dueTime && " "}
+                        {task.dueTime}
+                      </div>
+                      <div>
+                        <span>残り時間:</span>
+                        {getRemainingTime(task.dueDate, task.dueTime)}
+                      </div>
                     </div>
                   )}
 
