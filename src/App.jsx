@@ -261,7 +261,15 @@ function App() {
       case "stringAsc":
         return sortedTasks.sort((a, b) => {
           return a.text.localeCompare(b.text, "ja");
-        })
+        });
+
+      case "completedDateAsc":
+        return sortedTasks.sort((a, b) => {
+          const aDate = `${a.completedDate}T${a.completedTime}`;
+          const bDate = `${b.completedDate}T${b.completedTime}`;
+
+          return new Date(aDate) - new Date(bDate);
+        });
 
       case "added":
       default:
@@ -625,10 +633,24 @@ function App() {
 
         {/* 完了 */}
         <div className={style.taskContainer}>
-          <h2>完了</h2>
+          <div style={{marginBottom: "5px"}}>
+            <h2>完了</h2>
+            <span style={{color: "#000"}}>並び順: </span>
+            <select value={sortTypes.completed}
+            // selectの選択が変更されたときに実行
+              onChange={(e) => {
+                setSortTypes({...sortTypes,
+                  completed: e.target.value
+                });
+              }}>
+              <option value="added">追加した順</option>
+              <option value="startDateAsc">開始時期順</option>
+              <option value="completedDateAsc">完了時期順</option>
+            </select>
+          </div>
 
           {/* タスク表示 */}
-          {tasks.filter((task) => task.status === STATUS.COMPLETED).map((task) => (
+          {sortTasks(tasks.filter((task) => task.status === STATUS.COMPLETED), sortTypes.completed).map((task) => (
             <div key={task.id} className={style.card} style={{backgroundColor: task.color}}>
               <div className={style.deleteContainer}>
                 <button
