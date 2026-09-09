@@ -15,7 +15,7 @@ function App() {
   const [newTaskStartDate, setNewTaskStartDate] = useState("");
   const [newTaskColor, setNewTaskColor] = useState("");
 
-  const [sortType, setSortType] = useState("added");
+  const [sortTypes, setSortTypes] = useState({todo: "added", working: "added", completed: "added"});
 
   const [taskError, setTaskError] = useState("");
 
@@ -224,7 +224,7 @@ function App() {
     return `${days}日`;
   }
 
-  function sortTasks(tasks)
+  function sortTasks(tasks, sortType)
   {
     const sortedTasks = [...tasks];
 
@@ -232,7 +232,7 @@ function App() {
     {
       case "startDateAsc":
         return sortedTasks.sort((a, b) => {
-          return (a.startDate || "").localeCompare(b.startDate || ""); //localCompareは2つの文字列を比較するメソッド、返り値は-1, 0, 1
+          return (a.startDate || "").localeCompare(b.startDate || ""); //localeCompareは2つの文字列を比較するメソッド、返り値は-1, 0, 1
         });
 
       case "dueDateAsc":
@@ -341,7 +341,13 @@ function App() {
           <div style={{marginBottom: "5px"}}>
             <h2>タスク</h2>
             <span style={{color: "#000"}}>並び順: </span>
-            <select value={sortType} onChange={(e) => setSortType(e.target.value)}>
+            <select value={sortTypes.todo}
+            // selectの選択が変更されたときに実行
+              onChange={(e) => {
+                setSortTypes({...sortTypes,
+                  todo: e.target.value
+                });
+              }}>
               <option value="added">追加した順</option>
               <option value="startDateAsc">開始時期順</option>
               <option value="dueDateAsc">残り期限順</option>
@@ -350,7 +356,7 @@ function App() {
           </div>
 
           {/* タスク表示 */}
-          {sortTasks(tasks).filter((task) => task.status === STATUS.TODO).map((task) => (
+          {sortTasks(tasks.filter((task) => task.status === STATUS.TODO), sortTypes.todo).map((task) => (
             <div key={task.id} className={style.card} style={{backgroundColor: task.color}}>
               {editingTaskId === task.id ? (
                 // 複数の要素をひとまとめにするための見えない入れ物
