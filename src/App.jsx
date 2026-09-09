@@ -478,10 +478,25 @@ function App() {
 
         {/* 作業中 */}
         <div className={style.taskContainer}>
-          <h2>作業中</h2>
+          <div style={{marginBottom: "5px"}}>
+            <h2>作業中</h2>
+            <span style={{color: "#000"}}>並び順: </span>
+            <select value={sortTypes.working}
+            // selectの選択が変更されたときに実行
+              onChange={(e) => {
+                setSortTypes({...sortTypes,
+                  working: e.target.value
+                });
+              }}>
+              <option value="added">追加した順</option>
+              <option value="startDateAsc">開始時期順</option>
+              <option value="dueDateAsc">残り期限順</option>
+              <option value="stringAsc">文字列順</option>
+            </select>
+          </div>
 
           {/* タスク表示 */}
-          {tasks.filter((task) => task.status === STATUS.WORKING).map((task) => (
+          {sortTasks(tasks.filter((task) => task.status === STATUS.WORKING), sortTypes.working).map((task) => (
             <div key={task.id} className={style.card} style={{backgroundColor: task.color}}>
               {editingTaskId === task.id ? (
                 // 複数の要素をひとまとめにするための見えない入れ物
