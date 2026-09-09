@@ -15,6 +15,8 @@ function App() {
   const [newTaskStartDate, setNewTaskStartDate] = useState("");
   const [newTaskColor, setNewTaskColor] = useState("");
 
+  const [sortType, setSortType] = useState("added");
+
   const [taskError, setTaskError] = useState("");
 
   const STATUS = {
@@ -222,13 +224,58 @@ function App() {
     return `${days}日`;
   }
 
+  function sortTasks(tasks)
+  {
+    const sortedTasks = [...tasks];
+
+    switch(sortType)
+    {
+      case "startDateAsc":
+        return sortedTasks.sort((a, b) => {
+          return (a.startDate || "").localeCompare(b.startDate || ""); //localCompareは2つの文字列を比較するメソッド、返り値は-1, 0, 1
+        });
+
+      case "dueDateAsc":
+        return sortedTasks.sort((a, b) => {
+          // dueDateにnullが入っている時の処理
+          if(!a.dueDate && !b.dueDate)
+          {
+             return 0;
+          }
+          else if(!a.dueDate)
+          {
+            return 1;
+          }
+          else if(!b.dueDate)
+          {
+            return -1;
+          }
+
+          // どちらもnullじゃない場合の処理
+          const aDate = `${a.dueDate}T${a.dueTime || "23:59"}`;
+          const bDate = `${b.dueDate}T${b.dueTime || "23:59"}`;
+
+          return new Date(aDate) - new Date(bDate);
+        });
+
+      case "stringAsc":
+        return sortedTasks.sort((a, b) => {
+          return a.text.localeCompare(b.text, "ja");
+        })
+
+      case "added":
+      default:
+        return sortedTasks.sort((a, b) => a.id - b.id);
+    }
+  }
+
   return (
     <div>
       <div>
         <h1>カンバンボードアプリ</h1>
       </div>
 
-      <div>
+      <div style={{marginBottom: "10px"}}>
         <p style={{color: "#000"}}>タスクの追加</p>
         <div　style={{color: "#000", display:"flex", justifyContent:"center"}}>
           <div style={{marginBottom: "10px", textAlign: "right"}}>
@@ -291,10 +338,19 @@ function App() {
         
         {/* タスク */}
         <div className={style.taskContainer}>
-          <h2>タスク</h2>
+          <div style={{marginBottom: "5px"}}>
+            <h2>タスク</h2>
+            <span style={{color: "#000"}}>並び順: </span>
+            <select value={sortType} onChange={(e) => setSortType(e.target.value)}>
+              <option value="added">追加した順</option>
+              <option value="startDateAsc">開始時期順</option>
+              <option value="dueDateAsc">残り期限順</option>
+              <option value="stringAsc">文字列順</option>
+            </select>
+          </div>
 
           {/* タスク表示 */}
-          {tasks.filter((task) => task.status === STATUS.TODO).map((task) => (
+          {sortTasks(tasks).filter((task) => task.status === STATUS.TODO).map((task) => (
             <div key={task.id} className={style.card} style={{backgroundColor: task.color}}>
               {editingTaskId === task.id ? (
                 // 複数の要素をひとまとめにするための見えない入れ物
