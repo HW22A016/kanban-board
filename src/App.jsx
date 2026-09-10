@@ -308,8 +308,8 @@ function App() {
       </div>
 
       <div style={{marginBottom: "10px"}}>
-        <p style={{color: "#000"}}>タスクの追加</p>
-        <div style={{color: "#000", display:"flex", justifyContent:"center"}}>
+        <p>タスクの追加</p>
+        <div style={{display:"flex", justifyContent:"center"}}>
           <div style={{marginBottom: "10px", textAlign: "right"}}>
             <div>
               <input
