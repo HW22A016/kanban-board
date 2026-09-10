@@ -165,6 +165,17 @@ function App() {
     return `${year}年${month}月${day}日`;
   }
 
+  function isDeadline(dueDate, dueTime)
+  {
+    const now = new Date();
+
+    const dueDateTime = new Date(`${dueDate}T${dueTime || "00:00"}`);
+
+    const difference = dueDateTime - now;
+
+    return 0 <= difference && difference <= 86400000;
+  }
+
   function getRemainingTime(dueDate, dueTime)
   {
     const now = new Date();
@@ -252,10 +263,23 @@ function App() {
           }
 
           // どちらもnullじゃない場合の処理
-          const aDate = `${a.dueDate}T${a.dueTime || "23:59"}`;
-          const bDate = `${b.dueDate}T${b.dueTime || "23:59"}`;
+          const aDate = new Date(`${a.dueDate}T${a.dueTime || "23:59"}`);
+          const bDate = new Date(`${b.dueDate}T${b.dueTime || "23:59"}`);
 
-          return new Date(aDate) - new Date(bDate);
+          // 期限切れの場合の処理
+          const now = new Date();
+          const aExpired = aDate < now;
+          const bExpired = bDate < now;
+          
+          if(aExpired && !bExpired)
+          {
+            return 1;
+          }
+          else if(!aExpired && bExpired)
+          {
+            return -1
+          }
+          return aDate - bDate;
         });
 
       case "stringAsc":
@@ -455,10 +479,17 @@ function App() {
                         {task.dueDate && task.dueTime && " "}
                         {task.dueTime}
                       </div>
+                      {isDeadline(task.dueDate, task.dueTime) ?(
                       <div>
-                        <span>残り時間:</span>
-                        {getRemainingTime(task.dueDate, task.dueTime)}
+                        <span style={{background: "#FFF", color: "#F00"}}>
+                          <b>残り時間:{getRemainingTime(task.dueDate, task.dueTime)}</b>
+                        </span>
                       </div>
+                      ) : (
+                      <div>
+                        <span>残り時間:{getRemainingTime(task.dueDate, task.dueTime)}</span>
+                      </div>
+                      )}
                     </div>
                   )}
 
@@ -601,10 +632,17 @@ function App() {
                         {task.dueDate && task.dueTime && " "}
                         {task.dueTime}
                       </div>
+                      {isDeadline(task.dueDate, task.dueTime) ?(
                       <div>
-                        <span>残り時間:</span>
-                        {getRemainingTime(task.dueDate, task.dueTime)}
+                        <span style={{background: "#FFF", color: "#F00"}}>
+                          <b>残り時間:{getRemainingTime(task.dueDate, task.dueTime)}</b>
+                        </span>
                       </div>
+                      ) : (
+                      <div>
+                        <span>残り時間:{getRemainingTime(task.dueDate, task.dueTime)}</span>
+                      </div>
+                      )}
                     </div>
                   )}
 
