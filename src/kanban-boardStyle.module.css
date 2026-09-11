@@ -18,7 +18,7 @@
 .card input
 {
     width: 100%;
-    box-sizing: border-box;
+    box-sizing: border-box; /*margin, paddingも含めるようになる*/
 }
 
 .deleteContainer
@@ -56,5 +56,11 @@
     .black
     {
         color: #FFF;
+    }
+
+    input
+    {
+        background-color: #000;
+        border: 1px solid #FFF;
     }
 }
