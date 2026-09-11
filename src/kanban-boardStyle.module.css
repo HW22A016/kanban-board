@@ -2,6 +2,8 @@
 {
     border: 1px solid #000;
     padding: 10px;
+    flex: 1;
+    min-width: 0;
 }
 
 .card
@@ -10,6 +12,13 @@
     border: 1px solid #000;
     padding: 5px 5px 15px 5px;
     margin-bottom: 10px;
+    overflow-wrap: break-word;  /*文字の折り返し*/
+}
+
+.card input
+{
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .deleteContainer

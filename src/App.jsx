@@ -325,7 +325,7 @@ function App() {
               <input
                 type="text"
                 value={newTaskColor}
-                placeholder='#ffffff'
+                placeholder='#FFFFFF'
                 onChange={(e) => setNewTaskColor(e.target.value)} />
             </div>
 
