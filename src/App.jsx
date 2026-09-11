@@ -307,9 +307,9 @@ function App() {
         <h1>カンバンボードアプリ</h1>
       </div>
 
-      <div style={{marginBottom: "10px"}}>
+      <div className={style.black} style={{marginBottom: "10px"}}>
         <p>タスクの追加</p>
-        <div className={`${style.addTaskContainer} ${style.black}`}>
+        <div className={style.addTaskContainer}>
           <div style={{marginBottom: "10px", textAlign: "right"}}>
             <div>
               <input
@@ -372,7 +372,7 @@ function App() {
         <div className={style.taskContainer}>
           <div style={{marginBottom: "5px"}}>
             <h2>タスク</h2>
-            <span style={{color: "#000"}}>並び順: </span>
+            <span className={style.black}>並び順: </span>
             <select value={sortTypes.todo}
             // selectの選択が変更されたときに実行
               onChange={(e) => {
@@ -519,7 +519,7 @@ function App() {
         <div className={style.taskContainer}>
           <div style={{marginBottom: "5px"}}>
             <h2>作業中</h2>
-            <span style={{color: "#000"}}>並び順: </span>
+            <span className={style.black}>並び順: </span>
             <select value={sortTypes.working}
             // selectの選択が変更されたときに実行
               onChange={(e) => {
@@ -673,7 +673,7 @@ function App() {
         <div className={style.taskContainer}>
           <div style={{marginBottom: "5px"}}>
             <h2>完了</h2>
-            <span style={{color: "#000"}}>並び順: </span>
+            <span className={style.black}>並び順: </span>
             <select value={sortTypes.completed}
             // selectの選択が変更されたときに実行
               onChange={(e) => {
