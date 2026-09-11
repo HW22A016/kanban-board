@@ -16,3 +16,22 @@
 {
     text-align: right;
 }
+
+.addTaskContainer
+{
+    display: flex;
+    justify-content: center;
+}
+
+.black
+{
+    color: #000;
+}
+
+@media (prefers-color-scheme: dark)
+{
+    .black
+    {
+        color: #FFF;
+    }
+}

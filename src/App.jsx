@@ -309,7 +309,7 @@ function App() {
 
       <div style={{marginBottom: "10px"}}>
         <p>タスクの追加</p>
-        <div style={{display:"flex", justifyContent:"center"}}>
+        <div className={`${style.addTaskContainer} ${style.black}`}>
           <div style={{marginBottom: "10px", textAlign: "right"}}>
             <div>
               <input
