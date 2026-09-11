@@ -374,7 +374,8 @@ function App() {
             <h2>タスク</h2>
             <span className={style.black}>並び順: </span>
             <select value={sortTypes.todo}
-            // selectの選択が変更されたときに実行
+              className={style.selectContainer}
+              // selectの選択が変更されたときに実行
               onChange={(e) => {
                 setSortTypes({...sortTypes,
                   todo: e.target.value
@@ -521,7 +522,8 @@ function App() {
             <h2>作業中</h2>
             <span className={style.black}>並び順: </span>
             <select value={sortTypes.working}
-            // selectの選択が変更されたときに実行
+              className={style.selectContainer}
+              // selectの選択が変更されたときに実行
               onChange={(e) => {
                 setSortTypes({...sortTypes,
                   working: e.target.value
@@ -675,7 +677,8 @@ function App() {
             <h2>完了</h2>
             <span className={style.black}>並び順: </span>
             <select value={sortTypes.completed}
-            // selectの選択が変更されたときに実行
+              className={style.selectContainer}
+              // selectの選択が変更されたときに実行
               onChange={(e) => {
                 setSortTypes({...sortTypes,
                   completed: e.target.value
