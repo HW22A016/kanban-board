@@ -30,15 +30,22 @@
 
 @media (prefers-color-scheme: dark)
 {
-    .black
+    .taskContainer
     {
-        color: #FFF;
+        border: 1px solid #FFF;
+        padding: 10px;
     }
+
     .card
     {
-        color: #FFF;
+        color: #000;
         border: 1px solid #FFF;
         padding: 5px 5px 15px 5px;
         margin-bottom: 10px;
+    }
+
+    .black
+    {
+        color: #FFF;
     }
 }
